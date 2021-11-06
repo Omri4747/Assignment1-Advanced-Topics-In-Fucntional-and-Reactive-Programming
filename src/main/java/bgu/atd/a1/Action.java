@@ -15,11 +15,18 @@ import java.util.Collection;
  */
 public abstract class Action<R> {
 
+    private Promise<R> promise;
+    protected ActorThreadPool pool;
+
+    protected Action(){
+        promise = new Promise<>();
+    }
+
 	/**
      * start handling the action - note that this method is protected, a thread
      * cannot call it directly.
      */
-    protected abstract void start();
+    protected abstract void start() throws IllegalAccessException;
     
 
     /**
@@ -35,6 +42,7 @@ public abstract class Action<R> {
     *
     */
    /*package*/ final void handle(ActorThreadPool pool, String actorId, PrivateState actorState) {
+       this.pool = pool;
    }
     
     
@@ -49,9 +57,8 @@ public abstract class Action<R> {
      * @param callback the callback to execute once all the results are resolved
      */
     protected final void then(Collection<? extends Action<?>> actions, callback callback) {
-       	//TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
-   
+
+        promise.subscribe(callback);
     }
 
     /**
@@ -60,10 +67,8 @@ public abstract class Action<R> {
      *
      * @param result - the action calculated result
      */
-    protected final void complete(R result) {
-       	//TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
-   
+    protected final void complete(R result) throws IllegalAccessException {
+        promise.resolve(result);
     }
     
     /**
@@ -85,8 +90,7 @@ public abstract class Action<R> {
 	 * 				actor's private state (actor's information)
      */
 	public void sendMessage(Action<?> action, String actorId, PrivateState actorState){
-        //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+	    pool.submit(action, actorId, actorState);
 	}
 	
 	/**

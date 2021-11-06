@@ -1,5 +1,8 @@
 package bgu.atd.a1;
 
+import javax.security.auth.callback.Callback;
+import java.util.Queue;
+
 /**
  * this class represents a deferred result i.e., an object that eventually will
  * be resolved to hold a result of some operation, the class allows for getting
@@ -17,6 +20,8 @@ package bgu.atd.a1;
  */
 public class Promise<T>{
 
+	private T result = null;
+	private Queue<callback> callbacks;
 	/**
 	 *
 	 * @return the resolved value if such exists (i.e., if this object has been
@@ -25,9 +30,11 @@ public class Promise<T>{
 	 *             in the case where this method is called and this object is
 	 *             not yet resolved
 	 */
-	public T get() {
-		//TODO: replace method body with real implementation
-		throw new UnsupportedOperationException("Not Implemented Yet.");
+	public synchronized T get() {
+		if (!isResolved()){
+			throw new IllegalStateException("Promise hasn't been resolved yet");
+		}
+		return result;
 	}
 
 	/**
@@ -36,9 +43,8 @@ public class Promise<T>{
 	 *         {@link #resolve(java.lang.Object)} has been called on this object
 	 *         before.
 	 */
-	public boolean isResolved() {
-		//TODO: replace method body with real implementation
-		throw new UnsupportedOperationException("Not Implemented Yet.");
+	public synchronized boolean isResolved() {
+		return result != null;
 	}
 
 
@@ -55,9 +61,17 @@ public class Promise<T>{
 	 * @param value
 	 *            - the value to resolve this promise object with
 	 */
-	public void resolve(T value){
-		//TODO: replace method body with real implementation
-		throw new UnsupportedOperationException("Not Implemented Yet.");
+	public synchronized void resolve(T value) throws IllegalAccessException {
+		if (isResolved()){
+			throw new IllegalAccessException("Already resolved");
+		}
+		else if(value == null){
+			throw new IllegalAccessException("Can't resolve with 'null' value");
+		}
+		result = value;
+		while(!callbacks.isEmpty()){
+			callbacks.poll().call();
+		}
 	}
 
 	/**
@@ -73,8 +87,11 @@ public class Promise<T>{
 	 * @param callback
 	 *            the callback to be called when the promise object is resolved
 	 */
-	public void subscribe(callback callback) {
-		//TODO: replace method body with real implementation
-		throw new UnsupportedOperationException("Not Implemented Yet.");
+	public synchronized void subscribe(callback callback) throws IllegalAccessException {
+		if (isResolved()){
+			callback.call();
+			return;
+		}
+		callbacks.add(callback);
 	}
 }

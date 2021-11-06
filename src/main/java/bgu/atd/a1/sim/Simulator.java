@@ -43,9 +43,8 @@ public class Simulator {
 		//TODO: replace method body with real implementation
 		throw new UnsupportedOperationException("Not Implemented Yet.");
 	}
-	
-	
-	public static int main(String [] args){
+
+	public static void main(String [] args){
 		//TODO: replace method body with real implementation
 		throw new UnsupportedOperationException("Not Implemented Yet.");
 	}

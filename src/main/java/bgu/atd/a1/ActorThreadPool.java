@@ -1,6 +1,14 @@
 package bgu.atd.a1;
 
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * represents an actor thread pool - to understand what this class does please
@@ -14,6 +22,12 @@ import java.util.Map;
  */
 public class ActorThreadPool {
 
+	private Map<String, PrivateState> actors;
+	private Map<String, Queue<Action>> action_queue;
+	private Thread [] threads;
+	private AtomicBoolean active;
+	private Map<String,Semaphore> queues_locks;
+	private ActorThreadPool me;
 	/**
 	 * creates a {@link ActorThreadPool} which has nthreads. Note, threads
 	 * should not get started until calling to the {@link #start()} method.
@@ -27,6 +41,39 @@ public class ActorThreadPool {
 	 *            pool
 	 */
 	public ActorThreadPool(int nthreads) {
+		this.me = this;
+		active = new AtomicBoolean(true);
+		this.actors = new ConcurrentHashMap<>();
+		this.action_queue = new ConcurrentHashMap<>();
+		this.threads = new Thread[nthreads];
+		this.queues_locks = new ConcurrentHashMap<>();
+		for(int i=0;i<nthreads;i++){
+			//TODO: sync between threads (sleep and wake) and how to wake up
+			Runnable runnable_task = () -> {
+				try {
+					while (true) {
+						for (String actorId : action_queue.keySet()) {
+							Semaphore sem = queues_locks.get(actorId);
+							if (!sem.tryAcquire()) {
+								continue;
+							}
+							Queue<Action> queue = action_queue.get(actorId);
+							PrivateState ps = actors.get(actorId);
+							if (queue.size() == 0) {
+								sem.release();
+								continue;
+							}
+							Action act = queue.poll();
+							act.handle(me, actorId, ps);
+							sem.release();
+						}
+					}
+				}catch (Exception e){
+					e.printStackTrace();
+				}
+			};
+			threads[i] = new Thread(runnable_task);
+		}
 		// TODO: replace method body with real implementation
 		throw new UnsupportedOperationException("Not Implemented Yet.");
 	}
@@ -36,8 +83,7 @@ public class ActorThreadPool {
 	 * @return actors
 	 */
 	public Map<String, PrivateState> getActors(){
-		// TODO: replace method body with real implementation
-		throw new UnsupportedOperationException("Not Implemented Yet.");
+		return actors;
 	}
 	
 	/**
@@ -46,10 +92,8 @@ public class ActorThreadPool {
 	 * @return actor's private state
 	 */
 	public PrivateState getPrivateState(String actorId){
-		// TODO: replace method body with real implementation
-		throw new UnsupportedOperationException("Not Implemented Yet.");
+		return actors.get(actorId);
 	}
-
 
 	/**
 	 * submits an action into an actor to be executed by a thread belongs to
@@ -63,8 +107,10 @@ public class ActorThreadPool {
 	 *            actor's private state (actor's information)
 	 */
 	public void submit(Action<?> action, String actorId, PrivateState actorState) {
-		// TODO: replace method body with real implementation
-		throw new UnsupportedOperationException("Not Implemented Yet.");
+		actors.putIfAbsent(actorId, actorState);
+		queues_locks.putIfAbsent(actorId,new Semaphore(1));
+		action_queue.putIfAbsent(actorId, new ConcurrentLinkedQueue<>());
+		action_queue.get(actorId).add(action);
 	}
 
 	/**
@@ -78,16 +124,23 @@ public class ActorThreadPool {
 	 *             if the thread that shut down the threads is interrupted
 	 */
 	public void shutdown() throws InterruptedException {
-		// TODO: replace method body with real implementation
-		throw new UnsupportedOperationException("Not Implemented Yet.");
+		active.compareAndSet(true,false); //???????
+		//TODO: check how to interrupt the threads
+		for(Thread t: threads){
+			t.interrupt();
+		}
+		for(Thread t: threads){
+			t.join();
+		}
 	}
 
 	/**
 	 * start the threads belongs to this thread pool
 	 */
 	public void start() {
-		// TODO: replace method body with real implementation
-		throw new UnsupportedOperationException("Not Implemented Yet.");
+		for(Thread t: threads){
+			t.start();
+		}
 	}
 
 }
