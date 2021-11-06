@@ -1,81 +1,90 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>bgu</groupId>
-  <artifactId>atd</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>bgu</groupId>
+    <artifactId>atd</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
 
- <packaging>jar</packaging>
+    <packaging>jar</packaging>
 
-<name>a1</name>
+    <name>a1</name>
 
-<url>http://maven.apache.org</url>
-
-
-<properties>
-
-<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-</properties>
+    <url>http://maven.apache.org</url>
 
 
-<dependencies>
+    <properties>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    </properties>
 
 
-<dependency>
+    <dependencies>
 
-<groupId>junit</groupId>
+        <dependency>
 
-<artifactId>junit</artifactId>
+            <groupId>junit</groupId>
 
-<version>3.8.1</version>
+            <artifactId>junit</artifactId>
 
-<scope>test</scope>
+            <version>3.8.1</version>
 
-</dependency>
+            <scope>test</scope>
 
-</dependencies>
+        </dependency>
 
-
-<build>
-
-
-<plugins>
-
-
-<plugin>
-
-<groupId>org.apache.maven.plugins</groupId>
-
-<artifactId>maven-jar-plugin</artifactId>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.9</version>
+            <scope>compile</scope>
+        </dependency>
 
 
-<configuration>
+    </dependencies>
 
 
-<archive>
+    <build>
 
 
-<manifest>
+        <plugins>
 
-<mainClass>bgu.atd.a1.sim.Simulator</mainClass>
 
-</manifest>
+            <plugin>
 
-</archive>
+                <groupId>org.apache.maven.plugins</groupId>
 
-</configuration>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
 
-</plugin>
-    <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-            <source>17</source>
-            <target>17</target>
-        </configuration>
-    </plugin>
 
-</plugins>
+                <configuration>
 
-</build>
+
+                    <archive>
+
+
+                        <manifest>
+
+                            <mainClass>bgu.atd.a1.sim.Simulator</mainClass>
+
+                        </manifest>
+
+                    </archive>
+
+                </configuration>
+
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>17</source>
+                    <target>17</target>
+                </configuration>
+            </plugin>
+
+        </plugins>
+
+    </build>
 </project>
