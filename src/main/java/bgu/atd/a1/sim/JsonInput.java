@@ -1,5 +1,7 @@
 package bgu.atd.a1.sim;
 
+import bgu.atd.a1.sim.input.ActionInput;
+
 public class JsonInput {
     public int threads;
     public Computer[] Computers;
