@@ -8,10 +8,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import bgu.atd.a1.Action;
 import bgu.atd.a1.ActorThreadPool;
 import bgu.atd.a1.PrivateState;
+import bgu.atd.a1.sim.actions.AddStudentAction;
 import bgu.atd.a1.sim.actions.OpenNewCourseAction;
 import bgu.atd.a1.sim.privateStates.DepartmentPrivateState;
+import bgu.atd.a1.sim.privateStates.StudentPrivateState;
 
 /**
  * A class describing the simulator for part 2 of the assignment
@@ -51,9 +54,19 @@ public class Simulator {
 	public static void main(String [] args) throws InterruptedException {
 		List<String> preq = new LinkedList<>();
 		preq.add("yuval ve omri");
-		OpenNewCourseAction openNewCourseAction = new OpenNewCourseAction("SPL", "CS", 100, preq);
 		ActorThreadPool pool = new ActorThreadPool(10);
+		List<Action> actions = new LinkedList<>();
+		OpenNewCourseAction openNewCourseAction = new OpenNewCourseAction("SPL", "CS", 100, preq);
+		OpenNewCourseAction openNewCourseAction1 = new OpenNewCourseAction("Data Structures", "Hashmal", 423,new LinkedList<>());
+		AddStudentAction addStudentAction = new AddStudentAction(1);
+		AddStudentAction addStudentAction1 = new AddStudentAction(2);
+		actions.add(openNewCourseAction1);
+		actions.add(openNewCourseAction);
+		pool.submit(addStudentAction, "CS", new DepartmentPrivateState());
+		pool.submit(addStudentAction1, "Hashmal", new DepartmentPrivateState());
 		pool.submit(openNewCourseAction,"CS", new DepartmentPrivateState());
+		pool.submit(openNewCourseAction1,"Hashmal", new DepartmentPrivateState());
+		pool.submit(addStudentAction1, "CS", new DepartmentPrivateState());
 		pool.start();
 		Thread.sleep(1000);
 		pool.shutdown();

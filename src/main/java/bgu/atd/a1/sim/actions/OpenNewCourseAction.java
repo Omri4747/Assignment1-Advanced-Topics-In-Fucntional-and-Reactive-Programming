@@ -45,7 +45,7 @@ public class OpenNewCourseAction extends Action<ResultDetails> {
                 System.out.println("hi2");
             }
             else{
-                complete(new ResultDetails(false, res.getMessage()));
+                complete(res);
                 System.out.println("hi3");
             }
         });
