@@ -75,7 +75,6 @@ public abstract class Action<R> {
      * @param callback the callback to execute once all the results are resolved
      */
     protected final void then(Collection<? extends Action<?>> actions, callback callback) throws IllegalAccessException {
-        this.callback = callback;
         AtomicInteger dependencies = new AtomicInteger(actions.size());
         for (Action<?> action : actions) {
             action.promise.subscribe(() -> {
@@ -85,6 +84,7 @@ public abstract class Action<R> {
                     newVal = oldVal - 1;
                 } while (!dependencies.compareAndSet(oldVal, newVal));
                 if (newVal==0){
+                    this.callback = callback;
                     sendMessage(this, actorId, ps);
                 }
             });

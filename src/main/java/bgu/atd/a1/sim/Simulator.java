@@ -60,13 +60,15 @@ public class Simulator {
 		OpenNewCourseAction openNewCourseAction1 = new OpenNewCourseAction("Data Structures", "Hashmal", 423,new LinkedList<>());
 		AddStudentAction addStudentAction = new AddStudentAction(1);
 		AddStudentAction addStudentAction1 = new AddStudentAction(2);
+		AddStudentAction addStudentAction2 = new AddStudentAction(2);
+
 		actions.add(openNewCourseAction1);
 		actions.add(openNewCourseAction);
 		pool.submit(addStudentAction, "CS", new DepartmentPrivateState());
 		pool.submit(addStudentAction1, "Hashmal", new DepartmentPrivateState());
 		pool.submit(openNewCourseAction,"CS", new DepartmentPrivateState());
 		pool.submit(openNewCourseAction1,"Hashmal", new DepartmentPrivateState());
-		pool.submit(addStudentAction1, "CS", new DepartmentPrivateState());
+		pool.submit(addStudentAction2, "CS", new DepartmentPrivateState());
 		pool.start();
 		Thread.sleep(1000);
 		pool.shutdown();

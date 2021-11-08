@@ -24,8 +24,10 @@ public class AddStudentAction extends Action<ResultDetails> {
         List<String> studentList = ((DepartmentPrivateState) ps).getStudentList();
         if(studentList.contains(studentName)){
             complete(new ResultDetails(false,"Student "+signature +" is already enrolled."));
+            return;
         }
         if(pool.getActors().get(studentName) != null){
+            studentList.add(studentName);
             complete(new ResultDetails(true,"Student "+signature +" is exists."));
             return;
         }
@@ -37,11 +39,13 @@ public class AddStudentAction extends Action<ResultDetails> {
             boolean success = res.isSucceeded();
             if(success){
                 studentList.add(studentName);
+                System.out.println("hi "+studentName);
                 complete(new ResultDetails(true, studentName +"added successfully."));
             }
             else{
                 complete(res);
             }
         });
+        sendMessage(createNewStudentAction, studentName, new StudentPrivateState());
     }
 }
