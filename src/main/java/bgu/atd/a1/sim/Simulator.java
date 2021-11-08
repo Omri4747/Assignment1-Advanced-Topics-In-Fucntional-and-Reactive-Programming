@@ -5,9 +5,13 @@
  */
 package bgu.atd.a1.sim;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import bgu.atd.a1.ActorThreadPool;
 import bgu.atd.a1.PrivateState;
+import bgu.atd.a1.sim.actions.OpenNewCourseAction;
+import bgu.atd.a1.sim.privateStates.DepartmentPrivateState;
 
 /**
  * A class describing the simulator for part 2 of the assignment
@@ -44,8 +48,15 @@ public class Simulator {
 		throw new UnsupportedOperationException("Not Implemented Yet.");
 	}
 
-	public static void main(String [] args){
-		//TODO: replace method body with real implementation
-		throw new UnsupportedOperationException("Not Implemented Yet.");
+	public static void main(String [] args) throws InterruptedException {
+		List<String> preq = new LinkedList<>();
+		preq.add("yuval ve omri");
+		OpenNewCourseAction openNewCourseAction = new OpenNewCourseAction("SPL", "CS", 100, preq);
+		ActorThreadPool pool = new ActorThreadPool(10);
+		pool.submit(openNewCourseAction,"CS", new DepartmentPrivateState());
+		pool.start();
+		Thread.sleep(1000);
+		pool.shutdown();
+		System.out.println("omri forgot about sout");
 	}
 }
