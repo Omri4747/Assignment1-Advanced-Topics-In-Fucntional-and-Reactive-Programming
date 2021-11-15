@@ -57,6 +57,7 @@ public abstract class Action<R> {
             this.pool = pool;
             this.actorId = actorId;
             this.ps = actorState;
+            ps.addRecord(actionName);
             start();
         }
         else

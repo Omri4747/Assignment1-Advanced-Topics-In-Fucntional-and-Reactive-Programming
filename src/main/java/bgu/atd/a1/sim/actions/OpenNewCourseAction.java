@@ -22,33 +22,37 @@ public class OpenNewCourseAction extends Action<ResultDetails> {
         this.departmentName = departmentName;
         this.space = space;
         this.prerequisites = prerequisites;
+        setActionName("Open Course");
     }
 
     @Override
     protected void start() throws IllegalAccessException {
+        int i = 0;
+        System.out.println(actorId + i++);//0
         if(pool.getActors().get(courseName) != null){
             complete(new ResultDetails(false, "Course "+ courseName +" is already opened."));
             return;
         }
+        System.out.println(actorId + i++);//1
         if(!(ps instanceof DepartmentPrivateState))
             throw new IllegalAccessException("Given non DepartmentPrivateState to a Department Actor");
         InitiateNewCourseAction initiateNewCourseAction = new InitiateNewCourseAction(courseName, space, prerequisites);
         List<Action<ResultDetails>> actions = new LinkedList<>();
         actions.add(initiateNewCourseAction);
-        System.out.println("hi4");
+        System.out.println(actorId + i++);//2
         then(actions, ()->{
             ResultDetails res = actions.get(0).getResult().get();
             boolean succeeded = res.isSucceeded();
             if(succeeded){
                 ((DepartmentPrivateState) ps).getCourseList().add(courseName);
                 complete(new ResultDetails(true, "Course "+courseName+" opened with "+space+" spots."));
-                System.out.println("hi2");
             }
             else{
                 complete(res);
-                System.out.println("hi3");
             }
         });
+        System.out.println(actorId + i++);//3
         sendMessage(initiateNewCourseAction, courseName, new CoursePrivateState());
+        System.out.println(actorId + i++);//4
     }
 }

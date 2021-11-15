@@ -14,11 +14,12 @@ public class AddStudentAction extends Action<ResultDetails> {
 
     public AddStudentAction(long signature){
         this.signature = signature;
+        setActionName("Add Student");
     }
 
     @Override
     protected void start() throws IllegalAccessException {
-        String studentName = "student id: " + signature;
+        String studentName = ""+ signature;
         if(!(ps instanceof DepartmentPrivateState))
             throw new IllegalAccessException("");
         List<String> studentList = ((DepartmentPrivateState) ps).getStudentList();
@@ -39,8 +40,7 @@ public class AddStudentAction extends Action<ResultDetails> {
             boolean success = res.isSucceeded();
             if(success){
                 studentList.add(studentName);
-                System.out.println("hi "+studentName);
-                complete(new ResultDetails(true, studentName +"added successfully."));
+                complete(new ResultDetails(true, studentName +" added successfully."));
             }
             else{
                 complete(res);
