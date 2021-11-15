@@ -55,6 +55,10 @@ public class CoursePrivateState extends PrivateState {
         availableSpots += spots;
     }
 
+    public void closeCourseForReg(){
+        availableSpots=-1;
+    }
+
     public Integer getAvailableSpots() {
         return availableSpots;
     }

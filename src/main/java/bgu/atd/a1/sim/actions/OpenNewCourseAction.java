@@ -27,19 +27,15 @@ public class OpenNewCourseAction extends Action<ResultDetails> {
 
     @Override
     protected void start() throws IllegalAccessException {
-        int i = 0;
-        System.out.println(actorId + i++);//0
         if(pool.getActors().get(courseName) != null){
             complete(new ResultDetails(false, "Course "+ courseName +" is already opened."));
             return;
         }
-        System.out.println(actorId + i++);//1
         if(!(ps instanceof DepartmentPrivateState))
             throw new IllegalAccessException("Given non DepartmentPrivateState to a Department Actor");
         InitiateNewCourseAction initiateNewCourseAction = new InitiateNewCourseAction(courseName, space, prerequisites);
         List<Action<ResultDetails>> actions = new LinkedList<>();
         actions.add(initiateNewCourseAction);
-        System.out.println(actorId + i++);//2
         then(actions, ()->{
             ResultDetails res = actions.get(0).getResult().get();
             boolean succeeded = res.isSucceeded();
@@ -51,8 +47,6 @@ public class OpenNewCourseAction extends Action<ResultDetails> {
                 complete(res);
             }
         });
-        System.out.println(actorId + i++);//3
         sendMessage(initiateNewCourseAction, courseName, new CoursePrivateState());
-        System.out.println(actorId + i++);//4
     }
 }

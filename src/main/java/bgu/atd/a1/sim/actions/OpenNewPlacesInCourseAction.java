@@ -13,6 +13,7 @@ public class OpenNewPlacesInCourseAction extends Action<ResultDetails> {
     public OpenNewPlacesInCourseAction(String courseName, int space) {
         this.courseName = courseName;
         this.space = space;
+        setActionName("Add Spaces");
     }
 
     @Override

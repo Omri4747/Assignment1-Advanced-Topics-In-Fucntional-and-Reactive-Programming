@@ -12,6 +12,7 @@ import bgu.atd.a1.Action;
 import bgu.atd.a1.ActorThreadPool;
 import bgu.atd.a1.PrivateState;
 import bgu.atd.a1.sim.actions.AddStudentAction;
+import bgu.atd.a1.sim.actions.CloseACourseAction;
 import bgu.atd.a1.sim.actions.OpenNewCourseAction;
 import bgu.atd.a1.sim.actions.ParticipatingInCourseAction;
 import bgu.atd.a1.sim.privateStates.CoursePrivateState;
@@ -86,6 +87,9 @@ public class Simulator {
 		Thread.sleep(1000);
 		pool.submit(pic,"SPL",new CoursePrivateState());
 		pool.submit(pic1,"SPL",new CoursePrivateState());
+		Thread.sleep(1000);
+		CloseACourseAction cac=new CloseACourseAction("yuval ve omri","Hashmal" );
+		pool.submit(cac,"Hashmal",new DepartmentPrivateState());
 		Thread.sleep(1000);
 		pool.shutdown();
 		System.out.println("omri forgot about sout");
