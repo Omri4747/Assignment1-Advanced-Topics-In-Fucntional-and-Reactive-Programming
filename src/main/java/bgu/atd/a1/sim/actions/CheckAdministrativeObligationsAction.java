@@ -16,7 +16,7 @@ public class CheckAdministrativeObligationsAction extends Action<ResultDetails> 
     String computerType;
     List<String> conditions;
 
-    public CheckAdministrativeObligationsAction(List<String> studentsId, String computerType, List<String> conditions){
+    public CheckAdministrativeObligationsAction(List<String> studentsId, String computerType, List<String> conditions) {
         this.studentsId = studentsId;
         this.computerType = computerType;
         this.conditions = conditions;
@@ -25,32 +25,30 @@ public class CheckAdministrativeObligationsAction extends Action<ResultDetails> 
 
     @Override
     protected void start() throws IllegalAccessException {
-        if(!(ps instanceof DepartmentPrivateState))
+        if (!(ps instanceof DepartmentPrivateState))
             throw new IllegalAccessException("Given non DepartmentPrivateState to a course actor");
-        Computer computer = new Computer("a",1,0);
+        Computer computer = new Computer("a", 1, 0);
         List<Action<?>> actions = new LinkedList<>();
-        for(String student : studentsId) {
+        for (String student : studentsId) {
             CheckInComputerAction checkInComputerAction = new CheckInComputerAction(conditions, computer);
             sendMessage(checkInComputerAction, student, new StudentPrivateState());
             actions.add(checkInComputerAction);
         }
-
+        String courseName = "yuval";
         UnregisterCourseAction unregisterCourseAction = new UnregisterCourseAction();
-        List<Action<ResultDetails>> actions = new LinkedList<>();
         actions.add(unregisterCourseAction);
-        then(actions,()->{
-            ResultDetails res = actions.get(0).getResult().get();
+        then(actions, () -> {
+            ResultDetails res = (ResultDetails) actions.get(0).getResult().get();
             boolean succeeded = res.isSucceeded();
-            if(succeeded){
+            if (succeeded) {
                 // TODO: check if to remove the course from the dept ps i.e to keep or remove next line
                 ((DepartmentPrivateState) ps).getCourseList().remove(actorId);
-                complete(new ResultDetails(true, "Course "+courseName+" closed"));
-            }
-            else {
+                complete(new ResultDetails(true, "Course " + courseName + " closed"));
+            } else {
                 complete(res);
             }
         });
         sendMessage(unregisterCourseAction, courseName, new CoursePrivateState());
     }
-    }
 }
+

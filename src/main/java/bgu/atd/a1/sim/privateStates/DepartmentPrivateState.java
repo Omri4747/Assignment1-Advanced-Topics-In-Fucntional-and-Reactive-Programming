@@ -23,6 +23,10 @@ public class DepartmentPrivateState extends PrivateState{
 		studentList = new LinkedList<>();
 	}
 
+	public void addCourse(String course){
+		courseList.add(course);
+	}
+
 	public List<String> getCourseList() {
 		return courseList;
 	}

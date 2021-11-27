@@ -11,11 +11,9 @@ import java.util.List;
 public class CloseACourseAction extends Action<ResultDetails> {
 
     private String courseName;
-    private String departmentName;
 
-    public CloseACourseAction(String courseName, String departmentName){
+    public CloseACourseAction(String courseName){
         this.courseName = courseName;
-        this.departmentName = departmentName;
         setActionName("Close Course");
     }
     @Override
@@ -23,7 +21,7 @@ public class CloseACourseAction extends Action<ResultDetails> {
         if(!(ps instanceof DepartmentPrivateState))
             throw new IllegalAccessException("Given non DepartmentPrivateState to a course actor");
         if(! ((DepartmentPrivateState) ps).getCourseList().contains(courseName)) {
-            complete(new ResultDetails(false, "Course " + courseName + " is never opened in "+this.departmentName));
+            complete(new ResultDetails(false, "Course " + courseName + " is never opened in "+actorId));
             return;
         }
 

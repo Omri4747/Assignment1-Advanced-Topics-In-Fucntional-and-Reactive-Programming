@@ -33,9 +33,11 @@ public class ParticipatingInCourseAction extends Action<ResultDetails> {
             boolean success = res.isSucceeded();
             if (success) {  //Student has all the prerequisites
                 if (!((CoursePrivateState) ps).hasSpot()) {
+                    System.out.println("No spots available in "+actorId+".");
                     complete(new ResultDetails(false, "No spots available in course."));
                     return;
                 } else if (((CoursePrivateState) ps).isRegistered(studentId)) {
+                    System.out.println("Student " + studentId + " is already registered to course.");
                     complete(new ResultDetails(false, "Student " + studentId + " is already registered to course."));
                     return;
                 }
@@ -48,6 +50,7 @@ public class ParticipatingInCourseAction extends Action<ResultDetails> {
                 });
                 sendMessage(addCourseToStudentGradeSheetAction, studentId, new StudentPrivateState());
             } else {
+                System.out.println("failed to register in course "+actorId);
                 complete(res);
             }
         });

@@ -15,6 +15,7 @@ public class InitiateNewCourseAction extends Action<ResultDetails> {
         this.courseName = courseName;
         this.space = space;
         this.prerequisites = prerequisites;
+        this.setActionName("Initiate course");
     }
 
     @Override

@@ -21,6 +21,10 @@ public class UnregisterAction extends Action<ResultDetails> {
     protected void start() throws IllegalAccessException {
         if(!(ps instanceof CoursePrivateState))
             throw new IllegalAccessException("Given non CoursePrivateState to a Course Actor");
+        if(!((CoursePrivateState) ps).getRegStudents().contains(studentId)){
+            complete(new ResultDetails(false, "Student "+studentId+" isn't enrolled to course "+actorId));
+            return;
+        }
         UnregStudentFromCourseAction unregStudentFromCourseAction = new UnregStudentFromCourseAction(actorId);
         sendMessage(unregStudentFromCourseAction, studentId, new StudentPrivateState());
         List<Action<ResultDetails>> actions = new LinkedList<>();

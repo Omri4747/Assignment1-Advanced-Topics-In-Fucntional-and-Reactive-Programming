@@ -8,17 +8,12 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import bgu.atd.a1.Action;
 import bgu.atd.a1.ActorThreadPool;
 import bgu.atd.a1.PrivateState;
-import bgu.atd.a1.sim.actions.AddStudentAction;
-import bgu.atd.a1.sim.actions.CloseACourseAction;
-import bgu.atd.a1.sim.actions.OpenNewCourseAction;
-import bgu.atd.a1.sim.actions.ParticipatingInCourseAction;
+import bgu.atd.a1.sim.actions.*;
 import bgu.atd.a1.sim.privateStates.CoursePrivateState;
 import bgu.atd.a1.sim.privateStates.DepartmentPrivateState;
 import bgu.atd.a1.sim.privateStates.StudentPrivateState;
@@ -28,7 +23,16 @@ import com.google.gson.Gson;
  * A class describing the simulator for part 2 of the assignment
  */
 public class Simulator {
-
+	enum ActionEnum{
+		OpenCourse,
+		AddStudent,
+		ParticipateInCourse,
+		Unregister,
+		CloseCourse,
+		AddSpaces,
+		AdministrativeCheck,
+		RegisterWithPreferences
+	}
 	String jsonPath;
 
 	public Simulator(String jsonPath){
@@ -41,8 +45,7 @@ public class Simulator {
 	* Begin the simulation Should not be called before attachActorThreadPool()
 	*/
     public static void start(){
-		//TODO: replace method body with real implementation
-		throw new UnsupportedOperationException("Not Implemented Yet.");
+		actorThreadPool.start();
     }
 	
 	/**
@@ -58,12 +61,71 @@ public class Simulator {
 	* shut down the simulation
 	* returns list of private states
 	*/
-	public static HashMap<String,PrivateState> end(){
-		//TODO: replace method body with real implementation
-		throw new UnsupportedOperationException("Not Implemented Yet.");
+	public static Map<String,PrivateState> end() throws InterruptedException {
+		actorThreadPool.shutdown();
+		return actorThreadPool.getActors();
 	}
 
-	public static void main(String [] args) throws InterruptedException {
+	private static void createAndSendActions(InputDetails.ActionsInput[] actionsInputs){
+		HashMap<String, ActionEnum> actions = new HashMap<>();
+
+		actions.put("Open Course", ActionEnum.OpenCourse);
+		actions.put("Add Student", ActionEnum.AddStudent);
+		actions.put("Participate In Course", ActionEnum.ParticipateInCourse);
+		actions.put("Unregister", ActionEnum.Unregister);
+		actions.put("Close Course", ActionEnum.CloseCourse);
+		actions.put("Add Spaces",ActionEnum.AddSpaces);
+		actions.put("Administrative Check", ActionEnum.AdministrativeCheck);
+		actions.put("Register With Preferences",ActionEnum.RegisterWithPreferences);
+
+
+		for(InputDetails.ActionsInput actionsInput : actionsInputs){
+			String action = actionsInput.action;
+			ActionEnum actionId = actions.get(action);
+			switch (actionId) {
+				case OpenCourse -> {
+					OpenNewCourseAction openNewCourseAction = new OpenNewCourseAction(actionsInput.course, actionsInput.space, actionsInput.prerequisites);
+					actorThreadPool.submit(openNewCourseAction, actionsInput.department, new DepartmentPrivateState());
+				}
+				case AddStudent -> {
+					AddStudentAction addStudentAction = new AddStudentAction(actionsInput.studentId);
+					actorThreadPool.submit(addStudentAction, actionsInput.department, new DepartmentPrivateState());
+				}
+				case ParticipateInCourse -> {
+					int grade = actionsInput.grade == null || actionsInput.grade.length == 0 ? -1 : actionsInput.grade[0];
+					ParticipatingInCourseAction participatingInCourseAction = new ParticipatingInCourseAction(actionsInput.studentId, grade);
+					actorThreadPool.submit(participatingInCourseAction, actionsInput.course, new CoursePrivateState());
+				}
+				case Unregister -> {
+					UnregisterAction unregisterAction = new UnregisterAction(actionsInput.studentId);
+					actorThreadPool.submit(unregisterAction, actionsInput.course, new CoursePrivateState());
+				}
+				case CloseCourse -> {
+					CloseACourseAction closeACourseAction = new CloseACourseAction(actionsInput.course);
+					actorThreadPool.submit(closeACourseAction, actionsInput.department, new DepartmentPrivateState());
+				}
+				case AddSpaces -> {
+					AddSpacesAction addSpacesAction = new AddSpacesAction(actionsInput.space);
+					actorThreadPool.submit(addSpacesAction, actionsInput.course, new CoursePrivateState());
+				}
+				case AdministrativeCheck -> {
+					CheckAdministrativeObligationsAction checkAdministrativeObligationsAction = new CheckAdministrativeObligationsAction(actionsInput.studentsId, actionsInput.computerType, actionsInput.conditions);
+					actorThreadPool.submit(checkAdministrativeObligationsAction, actionsInput.department, new DepartmentPrivateState());
+				}
+				case RegisterWithPreferences -> {
+					Queue<Integer> grades = new LinkedList<>();
+					for (int i : actionsInput.grade) {
+						grades.add(i);
+					}
+					RegisterWithPreferencesAction registerWithPreferencesAction = new RegisterWithPreferencesAction(actionsInput.preferences, grades);
+					actorThreadPool.submit(registerWithPreferencesAction, actionsInput.studentId, new StudentPrivateState());
+				}
+				default -> throw new IllegalArgumentException("Not a valid Action Name from json");
+			}
+		}
+	}
+
+	public static void main(String[] args) throws InterruptedException {
 		InputDetails inputDetails = new InputDetails();
 		String path = args[0];
 		Gson gson = new Gson();
@@ -73,48 +135,21 @@ public class Simulator {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		System.out.println(inputDetails);
 		ActorThreadPool actorThreadPool = new ActorThreadPool(inputDetails.threads);
 		attachActorThreadPool(actorThreadPool);
-
-
-
-//		List<String> preq = new LinkedList<>();
-//		preq.add("yuval ve omri");
-//		ActorThreadPool pool = new ActorThreadPool(10);
-//		List<Action> actions = new LinkedList<>();
-//		OpenNewCourseAction openNewCourseAction = new OpenNewCourseAction("SPL", "CS", 1, preq);
-//		OpenNewCourseAction openNewCourseAction1 = new OpenNewCourseAction("Data Structures", "Hashmal", 423,new LinkedList<>());
-//		OpenNewCourseAction openNewCourseAction2 = new OpenNewCourseAction("yuval ve omri", "Hashmal", 423,new LinkedList<>());
-//
-//		AddStudentAction addStudentAction = new AddStudentAction(1);
-//		AddStudentAction addStudentAction1 = new AddStudentAction(2);
-//		AddStudentAction addStudentAction2 = new AddStudentAction(3);
-//
-//		ParticipatingInCourseAction pic = new ParticipatingInCourseAction(1,80);
-//		ParticipatingInCourseAction pic1 = new ParticipatingInCourseAction(2,80);
-//		ParticipatingInCourseAction pic2 = new ParticipatingInCourseAction(1,80);
-//		ParticipatingInCourseAction pic3 = new ParticipatingInCourseAction(2,80);
-//
-//		pool.start();
-//		pool.submit(openNewCourseAction2, "Hashmal", new DepartmentPrivateState());
-//		pool.submit(openNewCourseAction,"CS", new DepartmentPrivateState());
-//		pool.submit(openNewCourseAction1,"Hashmal", new DepartmentPrivateState());
-//		Thread.sleep(1000);
-//		pool.submit(addStudentAction, "CS", new DepartmentPrivateState());
-//		pool.submit(addStudentAction1, "Hashmal", new DepartmentPrivateState());
-////
-//		pool.submit(addStudentAction2, "CS", new DepartmentPrivateState());
-//		Thread.sleep(1000);
-//		pool.submit(pic2,"yuval ve omri",new CoursePrivateState());
-//		pool.submit(pic3,"yuval ve omri",new CoursePrivateState());
-//		Thread.sleep(1000);
-//		pool.submit(pic,"SPL",new CoursePrivateState());
-//		pool.submit(pic1,"SPL",new CoursePrivateState());
-//		Thread.sleep(1000);
-//		CloseACourseAction cac=new CloseACourseAction("yuval ve omri","Hashmal" );
-//		pool.submit(cac,"Hashmal",new DepartmentPrivateState());
-//		Thread.sleep(1000);
-//		pool.shutdown();
-//		System.out.println("omri forgot about sout");
+		start();
+		List<Computer> computers = new LinkedList<>();
+		for(InputDetails.ComputerInput computerInput: inputDetails.computersInput){
+			computers.add(computerInput.createComputer());
+		}
+		createAndSendActions(inputDetails.phase1);
+		Thread.sleep(50);
+		createAndSendActions(inputDetails.phase2);
+		Thread.sleep(50);
+		createAndSendActions(inputDetails.phase3);
+		Thread.sleep(1000);
+		Map<String, PrivateState> stringPrivateStateMap = end();
+		System.out.println("hi");
 	}
 }

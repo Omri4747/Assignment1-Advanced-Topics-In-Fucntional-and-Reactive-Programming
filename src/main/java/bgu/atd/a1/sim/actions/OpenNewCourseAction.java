@@ -12,14 +12,12 @@ import java.util.List;
 
 public class OpenNewCourseAction extends Action<ResultDetails> {
 
-    private String courseName;
-    private String departmentName;
-    private int space;
-    private List<String> prerequisites;
+    private final String courseName;
+    private final int space;
+    private final List<String> prerequisites;
 
-    public OpenNewCourseAction(String courseName, String departmentName, int space, List<String> prerequisites) {
+    public OpenNewCourseAction(String courseName, int space, List<String> prerequisites) {
         this.courseName = courseName;
-        this.departmentName = departmentName;
         this.space = space;
         this.prerequisites = prerequisites;
         setActionName("Open Course");
@@ -27,12 +25,12 @@ public class OpenNewCourseAction extends Action<ResultDetails> {
 
     @Override
     protected void start() throws IllegalAccessException {
-        if(pool.getActors().get(courseName) != null){
+        if(!(ps instanceof DepartmentPrivateState))
+            throw new IllegalAccessException("Given non DepartmentPrivateState to a Department Actor");
+        if(((DepartmentPrivateState) ps).getCourseList().contains(courseName)){
             complete(new ResultDetails(false, "Course "+ courseName +" is already opened."));
             return;
         }
-        if(!(ps instanceof DepartmentPrivateState))
-            throw new IllegalAccessException("Given non DepartmentPrivateState to a Department Actor");
         InitiateNewCourseAction initiateNewCourseAction = new InitiateNewCourseAction(courseName, space, prerequisites);
         List<Action<ResultDetails>> actions = new LinkedList<>();
         actions.add(initiateNewCourseAction);
@@ -40,10 +38,12 @@ public class OpenNewCourseAction extends Action<ResultDetails> {
             ResultDetails res = actions.get(0).getResult().get();
             boolean succeeded = res.isSucceeded();
             if(succeeded){
-                ((DepartmentPrivateState) ps).getCourseList().add(courseName);
+                System.out.println("open course succeed");
+                ((DepartmentPrivateState) ps).addCourse(courseName);
                 complete(new ResultDetails(true, "Course "+courseName+" opened with "+space+" spots."));
             }
             else{
+                System.out.println("open course failed");
                 complete(res);
             }
         });

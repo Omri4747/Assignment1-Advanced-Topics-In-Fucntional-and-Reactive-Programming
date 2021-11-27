@@ -3,6 +3,8 @@ package bgu.atd.a1.sim;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Queue;
 
 public class InputDetails {
     public static class ComputerInput{
@@ -12,6 +14,10 @@ public class InputDetails {
         long sigSuccess;
         @SerializedName("Sig Fail")
         long sigFail;
+
+        public Computer createComputer(){
+            return new Computer(type, sigFail, sigSuccess);
+        }
 
         @Override
         public String toString() {
@@ -31,32 +37,35 @@ public class InputDetails {
         String course;
         @SerializedName("Space")
         int space;
-        @SerializedName("Prequisites")
-        String[] prerequisites;
+        @SerializedName("Prerequisites")
+        List<String> prerequisites;
         @SerializedName("Student")
         String studentId;
         @SerializedName("Students")
-        String[] studentsId;
+        List<String> studentsId;
         @SerializedName("Computer")
         String computerType;
         @SerializedName("Conditions")
-        String[] conditions;
+        List<String> conditions;
         @SerializedName("Grade")
         int[] grade;
+        @SerializedName("Preferences")
+        Queue<String> preferences;
 
-        @Override
+
         public String toString() {
             return "\nActionsInput{" +
                     "action='" + action + '\'' +
                     ", department='" + department + '\'' +
                     ", course='" + course + '\'' +
                     ", space=" + space +
-                    ", prerequisites=" + Arrays.toString(prerequisites) +
+                    ", prerequisites=" + prerequisites +
                     ", studentId='" + studentId + '\'' +
-                    ", studentsId=" + Arrays.toString(studentsId) +
+                    ", studentsId=" + studentsId +
                     ", computerType='" + computerType + '\'' +
-                    ", conditions=" + Arrays.toString(conditions) +
+                    ", conditions=" + conditions +
                     ", grade=" + Arrays.toString(grade) +
+                    ", preferences=" + preferences+
                     "}";
         }
     }
