@@ -48,7 +48,7 @@ public class InputDetails {
         @SerializedName("Conditions")
         List<String> conditions;
         @SerializedName("Grade")
-        int[] grade;
+        String[] grade;
         @SerializedName("Preferences")
         Queue<String> preferences;
 

@@ -104,7 +104,6 @@ public class ActorThreadPool {
      * @param actorState actor's private state (actor's information)
      */
     public void submit(Action<?> action, String actorId, PrivateState actorState) {
-        System.out.println("hi " + actorId);
         actors.putIfAbsent(actorId, actorState);
         queues_locks.putIfAbsent(actorId, new Semaphore(1));
         action_queue.putIfAbsent(actorId, new ConcurrentLinkedQueue<>());
@@ -121,8 +120,7 @@ public class ActorThreadPool {
      * @throws InterruptedException if the thread that shut down the threads is interrupted
      */
     public void shutdown() throws InterruptedException {
-        active.compareAndSet(true, false); //???????
-        //TODO: check how to interrupt the threads
+        active.compareAndSet(true, false);
         for (Thread t : threads) {
             t.join();
         }

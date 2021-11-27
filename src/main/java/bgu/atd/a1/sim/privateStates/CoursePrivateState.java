@@ -51,16 +51,12 @@ public class CoursePrivateState extends PrivateState {
         increaseSpot();
         decreaseRegistered();
         regStudents.remove(student);
-        if(availableSpots>=100)
-            System.out.println(student+"XXXXXXXXXXXXXXXXXXX"+availableSpots);
     }
 
     public void closeCourse(){
         availableSpots += regStudents.size();
         registered = 0;
         regStudents.clear();
-        if(availableSpots>=100)
-            System.out.println("XXXXXXXXXXXXXXXXXXX"+availableSpots);
     }
 
     public boolean isRegistered(String student){

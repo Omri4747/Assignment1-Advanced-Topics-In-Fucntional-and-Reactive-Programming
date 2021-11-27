@@ -38,12 +38,10 @@ public class OpenNewCourseAction extends Action<ResultDetails> {
             ResultDetails res = actions.get(0).getResult().get();
             boolean succeeded = res.isSucceeded();
             if(succeeded){
-                System.out.println("open course succeed");
                 ((DepartmentPrivateState) ps).addCourse(courseName);
                 complete(new ResultDetails(true, "Course "+courseName+" opened with "+space+" spots."));
             }
             else{
-                System.out.println("open course failed");
                 complete(res);
             }
         });

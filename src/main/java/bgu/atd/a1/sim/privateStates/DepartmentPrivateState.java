@@ -10,8 +10,8 @@ import bgu.atd.a1.PrivateState;
  * this class describe department's private state
  */
 public class DepartmentPrivateState extends PrivateState{
-	private List<String> courseList;
-	private List<String> studentList;
+	private final List<String> courseList;
+	private final List<String> studentList;
 	
 	/**
  	 * Implementors note: you may not add other constructors to this class nor

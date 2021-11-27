@@ -1,14 +1,15 @@
 package bgu.atd.a1.sim;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class Computer {
+public class Computer implements Serializable {
 
 	String computerType;
 	long failSig;
 	long successSig;
-	
+
 	public Computer(String computerType, long failSig, long successSig) {
 		this.computerType = computerType;
 		this.failSig = failSig;
@@ -30,5 +31,9 @@ public class Computer {
 			}
 		}
 		return successSig;
+	}
+
+	public String getComputerType() {
+		return computerType;
 	}
 }

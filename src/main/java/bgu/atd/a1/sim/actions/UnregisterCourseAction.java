@@ -11,10 +11,6 @@ import java.util.List;
 
 public class UnregisterCourseAction extends Action<ResultDetails> {
 
-    public UnregisterCourseAction(){
-        this.setActionName("Unregister all students from course");
-    }
-
     @Override
     protected void start() throws IllegalAccessException {
         if(!(ps instanceof CoursePrivateState))

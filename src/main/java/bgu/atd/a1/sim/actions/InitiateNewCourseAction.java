@@ -15,18 +15,14 @@ public class InitiateNewCourseAction extends Action<ResultDetails> {
         this.courseName = courseName;
         this.space = space;
         this.prerequisites = prerequisites;
-        this.setActionName("Initiate course");
     }
 
     @Override
     protected void start() throws IllegalAccessException {
-        System.out.println("hi6");
         if(!(ps instanceof CoursePrivateState))
             throw new IllegalAccessException("Given non CoursePrivateState to a course actor");
         ((CoursePrivateState) ps).addSpots(space);
-        System.out.println("hi7");
         ((CoursePrivateState) ps).getPrequisites().addAll(prerequisites);
         complete(new ResultDetails(true, "Added "+ space + " spots to course " + courseName));
-        System.out.println("hi8");
     }
 }

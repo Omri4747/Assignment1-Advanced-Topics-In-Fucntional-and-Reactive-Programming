@@ -75,12 +75,9 @@ public class Promise<T>{
 			throw new IllegalAccessException("Can't resolve with 'null' value");
 		}
 		result = value;
-		System.out.println(callbacks.size());
 		while(!callbacks.isEmpty()){
-			System.out.println("in callbacks");
 			callbacks.poll().call();
 		}
-		System.out.println("out callbacks");
 	}
 
 	/**
