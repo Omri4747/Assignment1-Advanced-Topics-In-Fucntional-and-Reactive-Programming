@@ -10,7 +10,7 @@ import bgu.atd.a1.PrivateState;
  */
 public class StudentPrivateState extends PrivateState{
 
-	private HashMap<String, Integer> grades;
+	private final HashMap<String, Integer> grades;
 	private long signature;
 	
 	/**
@@ -19,7 +19,7 @@ public class StudentPrivateState extends PrivateState{
 	 * this may cause automatic tests to fail..
 	 */
 	public StudentPrivateState() {
-		signature = -1;
+		signature = 0;
 		grades = new HashMap<>();
 	}
 

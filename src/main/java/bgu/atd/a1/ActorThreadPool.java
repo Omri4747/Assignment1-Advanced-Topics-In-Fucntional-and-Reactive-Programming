@@ -63,7 +63,6 @@ public class ActorThreadPool {
                             continue;
                         }
                         Action<?> act = queue.poll();
-                        System.out.println("hi1");
 						try {
 							act.handle(me, actorId, ps);
 						} catch (IllegalAccessException e) {

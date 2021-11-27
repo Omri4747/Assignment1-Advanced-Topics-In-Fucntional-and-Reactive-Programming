@@ -10,10 +10,18 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class UnregisterCourseAction extends Action<ResultDetails> {
+
+    public UnregisterCourseAction(){
+        this.setActionName("Unregister all students from course");
+    }
+
     @Override
     protected void start() throws IllegalAccessException {
         if(!(ps instanceof CoursePrivateState))
             throw new IllegalAccessException("Given non CoursePrivateState to a Course Actor");
+        if(((CoursePrivateState) ps).getAvailableSpots() == -1){
+            complete(new ResultDetails(false,"Course "+actorId+" is already closed."));
+        }
         ((CoursePrivateState) ps).closeCourseForReg(); // set to -1
         List<Action<ResultDetails>> actions = new LinkedList<>();
         for(String student : ((CoursePrivateState) ps).getRegStudents()){
@@ -22,15 +30,16 @@ public class UnregisterCourseAction extends Action<ResultDetails> {
             actions.add(unregStudentFromCourseAction);
         }
         then(actions,()->{
-            for (int i=0;i<actions.size();i++){
-                ResultDetails res = actions.get(i).getResult().get();
+            for (Action<ResultDetails> action : actions) {
+                ResultDetails res = action.getResult().get();
                 boolean succeeded = res.isSucceeded();
                 if (!succeeded) {
                     complete(res);
                     return;
                 }
             }
-                complete(new ResultDetails(true, "Course "+actorId+" closed "));
+            ((CoursePrivateState) ps).closeCourse();
+            complete(new ResultDetails(true, "Course "+actorId+" is closed."));
         });
     }
 }

@@ -10,42 +10,41 @@ import java.util.List;
 
 public class AddStudentAction extends Action<ResultDetails> {
 
-    public long signature;
+    public String studentId;
 
-    public AddStudentAction(long signature){
-        this.signature = signature;
+    public AddStudentAction(String studentId){
+        this.studentId = studentId;
         setActionName("Add Student");
     }
 
     @Override
     protected void start() throws IllegalAccessException {
-        String studentName = ""+ signature;
         if(!(ps instanceof DepartmentPrivateState))
             throw new IllegalAccessException("");
         List<String> studentList = ((DepartmentPrivateState) ps).getStudentList();
-        if(studentList.contains(studentName)){
-            complete(new ResultDetails(false,"Student "+signature +" is already enrolled."));
+        if(studentList.contains(studentId)){
+            complete(new ResultDetails(false,"Student "+studentId +" is already enrolled."));
             return;
         }
-        if(pool.getActors().get(studentName) != null){
-            studentList.add(studentName);
-            complete(new ResultDetails(true,"Student "+signature +" is exists."));
+        if(pool.getActors().get(studentId) != null){
+            studentList.add(studentId);
+            complete(new ResultDetails(true,"Student "+studentId +" is exists."));
             return;
         }
-        CreateNewStudentAction createNewStudentAction = new CreateNewStudentAction(signature);
+        CreateNewStudentAction createNewStudentAction = new CreateNewStudentAction();
         List<Action<ResultDetails>> actions = new LinkedList<>();
         actions.add(createNewStudentAction);
         then(actions,()->{
             ResultDetails res = actions.get(0).getResult().get();
             boolean success = res.isSucceeded();
             if(success){
-                studentList.add(studentName);
-                complete(new ResultDetails(true, studentName +" added successfully."));
+                studentList.add(studentId);
+                complete(new ResultDetails(true, studentId +" added successfully."));
             }
             else{
                 complete(res);
             }
         });
-        sendMessage(createNewStudentAction, studentName, new StudentPrivateState());
+        sendMessage(createNewStudentAction, studentId, new StudentPrivateState());
     }
 }

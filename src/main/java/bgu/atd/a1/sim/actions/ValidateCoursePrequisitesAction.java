@@ -9,7 +9,7 @@ import java.util.List;
 
 public class ValidateCoursePrequisitesAction extends Action<ResultDetails> {
 
-    private List<String> prequisites;
+    private final List<String> prequisites;
 
     public ValidateCoursePrequisitesAction(List<String> prequisites) {
         this.prequisites = prequisites;

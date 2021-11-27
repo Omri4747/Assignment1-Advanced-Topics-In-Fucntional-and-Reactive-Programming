@@ -32,29 +32,20 @@ public class ParticipatingInCourseAction extends Action<ResultDetails> {
         then(actions, () -> {
             ResultDetails res = actions.get(0).getResult().get();
             boolean success = res.isSucceeded();
-            if (success) {  //Student has all the prequisites
+            if (success) {  //Student has all the prerequisites
+                if (!((CoursePrivateState) ps).hasSpot()) {
+                    complete(new ResultDetails(false, "No spots available in course."));
+                    return;
+                } else if (((CoursePrivateState) ps).isRegistered(studentId)) {
+                    complete(new ResultDetails(false, "Student " + studentId + " is already registered to course."));
+                    return;
+                }
+                ((CoursePrivateState) ps).registerStudent(studentId);
                 AddCourseToStudentGradeSheetAction addCourseToStudentGradeSheetAction = new AddCourseToStudentGradeSheetAction(actorId, grade);
                 List<Action<ResultDetails>> secondActions = new LinkedList<>();
                 secondActions.add(addCourseToStudentGradeSheetAction);
                 then(secondActions, () -> {
-                    ResultDetails secondRes = secondActions.get(0).getResult().get();
-                    boolean secondSuccess = secondRes.isSucceeded();
-                    if (secondSuccess) {    //Student successfully added the course to it's grades list
-                        System.out.println("debug with "+studentId);
-                        System.out.println(actorId + " " +((CoursePrivateState) ps).hasSpot());
-                        System.out.println("actorid is "+actorId + " " +((CoursePrivateState) ps).getAvailableSpots());
-                        if (!((CoursePrivateState) ps).hasSpot()) {
-                            complete(new ResultDetails(false, "No spots available in course."));
-                            return;
-                        } else if (((CoursePrivateState) ps).isRegistered(studentId)) {
-                            complete(new ResultDetails(false, "Student " + studentId + " is already registered to course."));
-                            return;
-                        }
-                        ((CoursePrivateState) ps).registerStudent(studentId);
-                        complete(new ResultDetails(true, secondRes.getMessage()));
-                    } else {
-                        complete(secondRes);
-                    }
+                    complete(secondActions.get(0).getResult().get());
                 });
                 sendMessage(addCourseToStudentGradeSheetAction, studentId, new StudentPrivateState());
             } else {

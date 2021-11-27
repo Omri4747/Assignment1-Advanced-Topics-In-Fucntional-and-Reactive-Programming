@@ -2,29 +2,37 @@ package bgu.atd.a1.sim.actions;
 
 import bgu.atd.a1.Action;
 import bgu.atd.a1.ResultDetails;
+import bgu.atd.a1.sim.Computer;
 import bgu.atd.a1.sim.privateStates.CoursePrivateState;
 import bgu.atd.a1.sim.privateStates.DepartmentPrivateState;
+import bgu.atd.a1.sim.privateStates.StudentPrivateState;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class CloseACourseAction extends Action<ResultDetails> {
+public class CheckAdministrativeObligationsAction extends Action<ResultDetails> {
 
-    private String courseName;
-    private String departmentName;
+    List<String> studentsId;
+    String computerType;
+    List<String> conditions;
 
-    public CloseACourseAction(String courseName, String departmentName){
-        this.courseName = courseName;
-        this.departmentName = departmentName;
-        setActionName("Close Course");
+    public CheckAdministrativeObligationsAction(List<String> studentsId, String computerType, List<String> conditions){
+        this.studentsId = studentsId;
+        this.computerType = computerType;
+        this.conditions = conditions;
     }
+
+
     @Override
     protected void start() throws IllegalAccessException {
         if(!(ps instanceof DepartmentPrivateState))
             throw new IllegalAccessException("Given non DepartmentPrivateState to a course actor");
-        if(! ((DepartmentPrivateState) ps).getCourseList().contains(courseName)) {
-            complete(new ResultDetails(false, "Course " + courseName + " is never opened in "+this.departmentName));
-            return;
+        Computer computer = new Computer("a",1,0);
+        List<Action<?>> actions = new LinkedList<>();
+        for(String student : studentsId) {
+            CheckInComputerAction checkInComputerAction = new CheckInComputerAction(conditions, computer);
+            sendMessage(checkInComputerAction, student, new StudentPrivateState());
+            actions.add(checkInComputerAction);
         }
 
         UnregisterCourseAction unregisterCourseAction = new UnregisterCourseAction();
@@ -43,5 +51,6 @@ public class CloseACourseAction extends Action<ResultDetails> {
             }
         });
         sendMessage(unregisterCourseAction, courseName, new CoursePrivateState());
+    }
     }
 }

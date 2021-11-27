@@ -13,8 +13,8 @@ public class CoursePrivateState extends PrivateState {
 
     private Integer availableSpots;
     private Integer registered;
-    private List<String> regStudents;
-    private List<String> prequisites;
+    private final List<String> regStudents;
+    private final List<String> prequisites;
 
     /**
      * Implementors note: you may not add other constructors to this class nor
@@ -32,8 +32,11 @@ public class CoursePrivateState extends PrivateState {
         availableSpots--;
     }
 
+    private void increaseSpot(){availableSpots++;}
+
     private void increaseRegistered(){registered++;}
 
+    private void decreaseRegistered(){registered--;}
     //@pre: only if avaliableSpots > 0 and student is not registered yet
     /**
     @param student : student is not registered yet
@@ -42,6 +45,18 @@ public class CoursePrivateState extends PrivateState {
         decreaseSpot();
         increaseRegistered();
         regStudents.add(student);
+    }
+
+    public void unregisterStudent(String student){
+        increaseSpot();
+        decreaseRegistered();
+        regStudents.remove(student);
+    }
+
+    public void closeCourse(){
+        availableSpots += regStudents.size();
+        registered = 0;
+        regStudents.clear();
     }
 
     public boolean isRegistered(String student){
