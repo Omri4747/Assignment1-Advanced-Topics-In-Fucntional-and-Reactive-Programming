@@ -10,18 +10,17 @@ import java.util.List;
 
 public class ParticipatingInCourseAction extends Action<ResultDetails> {
 
-    private long studentSignature;
+    private String studentId;
     private int grade;
 
-    public ParticipatingInCourseAction(long studentSignature, int grade) {
-        this.studentSignature = studentSignature;
+    public ParticipatingInCourseAction(String studentId, int grade) {
+        this.studentId = studentId;
         this.grade = grade;
         this.setActionName("Participate In Course");
     }
 
     @Override
     protected void start() throws IllegalAccessException {
-        String studentId = "" + studentSignature;
         if (!(ps instanceof CoursePrivateState)) {
             throw new IllegalAccessException("Given non CoursePrivateState to a Course Actor.");
         }
