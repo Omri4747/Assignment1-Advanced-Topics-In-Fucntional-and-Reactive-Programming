@@ -22,12 +22,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ActorThreadPool {
 
-    private Map<String, PrivateState> actors;
-    private Map<String, Queue<Action>> action_queue;
-    private Thread[] threads;
-    private AtomicBoolean active;
-    private Map<String, Semaphore> queues_locks;
-    private ActorThreadPool me;
+    private final Map<String, PrivateState> actors;
+    private final Map<String, Queue<Action<?>>> action_queue;
+    private final Thread[] threads;
+    private final AtomicBoolean active;
+    private final Map<String, Semaphore> queues_locks;
+    private final ActorThreadPool me;
 
     /**
      * creates a {@link ActorThreadPool} which has nthreads. Note, threads
@@ -56,7 +56,7 @@ public class ActorThreadPool {
                         if (!sem.tryAcquire()) {
                             continue;
                         }
-                        Queue<Action> queue = action_queue.get(actorId);
+                        Queue<Action<?>> queue = action_queue.get(actorId);
                         PrivateState ps = actors.get(actorId);
                         if (queue.size() == 0) {
                             sem.release();
@@ -124,9 +124,6 @@ public class ActorThreadPool {
     public void shutdown() throws InterruptedException {
         active.compareAndSet(true, false); //???????
         //TODO: check how to interrupt the threads
-        for (Thread t : threads) {
-            t.interrupt();
-        }
         for (Thread t : threads) {
             t.join();
         }
