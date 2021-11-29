@@ -66,9 +66,9 @@ public class Simulator {
      * shut down the simulation
      * returns list of private states
      */
-    public static Map<String, PrivateState> end() throws InterruptedException {
+    public static HashMap<String, PrivateState> end() throws InterruptedException {
         actorThreadPool.shutdown();
-        return actorThreadPool.getActors();
+        return new HashMap<>(actorThreadPool.getActors());
     }
 
     private static void createAndSendActions(InputDetails.ActionsInput[] actionsInputs, CountDownLatch count) throws IllegalAccessException {
@@ -226,7 +226,7 @@ public class Simulator {
 
         // uncomment to generate json from the simulation into args[1]:
 //        OutputDetails outputDetails = new OutputDetails();
-//        String pathToOutput=args[1];
+//        String pathToOutput="./output.json";
 //        generateJsonOutputFile(outputDetails,stringPrivateStateMap,pathToOutput,gson);
 
     }
